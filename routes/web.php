@@ -15,13 +15,12 @@ use App\Http\Controllers\BooksController;
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::get('/', [BooksController::class, 'index']);
 
 Route::get('/home', [BooksController::class, 'index'])->name('home');
 
-Route::resource('user', UsersController::class)->middleware(['auth']);
+Route::resource('user', UsersController::class)->middleware(['auth', 'admin']);
+
 Route::resource('book', BooksController::class)->middleware(['auth']);
 
 require __DIR__.'/auth.php';

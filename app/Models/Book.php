@@ -25,4 +25,22 @@ class Book extends Model
         'discount',
         'isAproved'
     ];
+
+    public function getFinalPriceAttribute()
+    {
+        return $this->price * (1 - $this->discount/100);
+    }
+
+    public function getIsNewAttribute()
+    {
+        return $this->created_at >= \Carbon\Carbon::today()->subDays(7);
+    }
+
+    public function getCanEditAttribute()
+    {
+        if (!auth()->user()) {
+            return false;
+        }
+        return auth()->user()->role === 'admin' || auth()->user()->id === $this->user_id;
+    }
 }

@@ -81,9 +81,9 @@ class BooksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Book $book)
     {
-        //
+        return view('book.show')->with('book', $book);
     }
 
     /**
@@ -92,9 +92,12 @@ class BooksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Book $book)
     {
-        //
+        if(auth()->user()->id !== $book->user_id){
+            return back()->with('error', 'You cant edit this listing!');
+        }
+        return view('book.edit')->with('book', $book);
     }
 
     /**
@@ -104,9 +107,38 @@ class BooksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Book $book)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'author' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
+            'price' => 'required',
+        ]);
+
+        if ($request->hasFile('cover')) {
+
+            $request->validate([
+                'cover' => 'file|image|max:5000'
+            ]);
+
+            $request->cover->store('covers', 'public');
+            $fileName = $request->cover->hashName();
+
+        } else {
+            $fileName = $book->cover;
+        }
+
+        $book->title = $request->title;
+        $book->description = $request->description;
+        $book->author = $request->author;
+        $book->genre = $request->genre;
+        $book->price = $request->price;
+        $book->cover = $fileName;
+        $book->save();
+
+        return view('book.show')->with('book', $book)->with('success', 'Updated successfully!');
     }
 
     /**
@@ -115,8 +147,9 @@ class BooksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Book $book)
     {
-        //
+        $book->delete();
+        return back()->with('success', 'Book listing deleted successfully!');
     }
 }

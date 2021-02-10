@@ -23,7 +23,14 @@
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->dob }}</td>
                                     <td>{{ $user->role }}</td>
-                                    <td><a href="{{ url('/user') }}/{{ $user->id }}/edit">Edit</a></td>
+                                    <td>
+                                        <a class="text-yellow-400" href="{{ url('/user') }}/{{ $user->id }}/edit">Edit</a>
+                                        <form method="POST" action="{{ route('user.destroy', $user->id) }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="text-red-400" type="submit">Delete</button>
+                                        </form>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
