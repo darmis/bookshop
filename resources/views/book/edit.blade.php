@@ -46,6 +46,13 @@
                         <x-input id="price" class="block mt-1 w-full" type="text" name="price" value="{{ $book->price }}" required autofocus />
                     </div>
 
+                    <!-- Discount -->
+                    <div class="m-2">
+                        <x-label for="discount" :value="__('Discount')" />
+
+                        <x-input id="discount" class="block mt-1 w-full" type="text" name="discount" value="{{ $book->discount }}" required autofocus />
+                    </div>
+
                     <!-- Cover -->
                     <div class="m-2">
                         <x-label for="cover" :value="__('Cover photo')" />

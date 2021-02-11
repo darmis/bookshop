@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Book;
+use App\Models\Rate;
+use Auth;
 
 class BooksController extends Controller
 {
@@ -83,7 +85,16 @@ class BooksController extends Controller
      */
     public function show(Book $book)
     {
-        return view('book.show')->with('book', $book);
+        $rates = Rate::where('book_id', $book->id)->get();
+        $rated = 'no';
+        if(!Auth::guest()){
+            foreach($rates as $rate){
+                if($rate->user_id === auth()->user()->id){
+                    $rated = 'yes';
+                }
+            }
+        }
+        return view('book.show')->with(compact('book', 'rates', 'rated'));
     }
 
     /**
@@ -115,6 +126,7 @@ class BooksController extends Controller
             'author' => 'required|string|max:255',
             'genre' => 'required|string|max:255',
             'price' => 'required',
+            'discount' => 'required|max:99'
         ]);
 
         if ($request->hasFile('cover')) {
@@ -135,10 +147,13 @@ class BooksController extends Controller
         $book->author = $request->author;
         $book->genre = $request->genre;
         $book->price = $request->price;
+        $book->discount = $request->discount;
         $book->cover = $fileName;
         $book->save();
 
-        return view('book.show')->with('book', $book)->with('success', 'Updated successfully!');
+        $rates = Rate::where('book_id', $book->id)->get();
+
+        return view('book.show')->with(compact('book', 'rates'))->with('success', 'Updated successfully!');
     }
 
     /**

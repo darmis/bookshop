@@ -26,6 +26,14 @@ class Book extends Model
         'isAproved'
     ];
 
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function rates() {
+        return $this->hasMany(Rate::class);
+    }
+
     public function getFinalPriceAttribute()
     {
         return $this->price * (1 - $this->discount/100);
