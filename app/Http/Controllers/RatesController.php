@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Rate;
 use App\Models\Book;
 use App\Models\Review;
+use Auth;
 
 class RatesController extends Controller
 {
@@ -34,6 +35,16 @@ class RatesController extends Controller
 
         $book = Book::where('id', $request->book_id)->first();
         $rates = Rate::where('book_id', $request->book_id)->get();
-        return view('book.show', [$request->book_id])->with(compact('book', 'rates'));
+
+        $rated = 'no';
+        if(!Auth::guest()){
+            foreach($rates as $rate){
+                if($rate->user_id === auth()->user()->id){
+                    $rated = 'yes';
+                }
+            }
+        }
+
+        return view('book.show', [$request->book_id])->with(compact('book', 'rates', 'rated'));
     }
 }

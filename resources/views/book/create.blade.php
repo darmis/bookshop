@@ -24,16 +24,18 @@
 
                     <!-- Authors -->
                     <div class="m-2">
-                        <x-label for="author" :value="__('Author (separate with comma if more than one author)')" />
+                        <x-label for="authors" :value="__('Authors (separate with comma if more than one author)')" />
 
-                        <x-input id="author" class="block mt-1 w-full" type="text" name="author" :value="old('author')" required autofocus />
+                        <x-input id="authors" class="block mt-1 w-full" type="text" name="authors" :value="old('authors')" required autofocus />
                     </div>
 
                     <!-- Genre -->
                     <div class="m-2">
-                        <x-label for="genre" :value="__('Genre (separate with comma if more than one genre)')" />
-
-                        <x-input id="genre" class="block mt-1 w-full" type="text" name="genre" :value="old('genre')" required autofocus />
+                        <x-label for="genres" :value="__('Genres')" />
+                        @foreach($genres as $genre)
+                            <x-input class="inline-block mt-1" type="checkbox" name="genres[]" value="{{ $genre->id }}" />
+                            <div class="inline-block mt-1">{{ $genre->genre }}</div><br>
+                        @endforeach
                     </div>
 
                     <!-- Price -->

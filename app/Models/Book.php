@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Auth;
 
 class Book extends Model
 {
@@ -34,6 +35,14 @@ class Book extends Model
         return $this->hasMany(Rate::class);
     }
 
+    public function genres() {
+        return $this->belongsToMany(Genre::class);
+    }
+
+    public function authors() {
+        return $this->belongsToMany(Author::class);
+    }
+
     public function getFinalPriceAttribute()
     {
         return $this->price * (1 - $this->discount/100);
@@ -50,5 +59,18 @@ class Book extends Model
             return false;
         }
         return auth()->user()->role === 'admin' || auth()->user()->id === $this->user_id;
+    }
+
+    public function getIsRatedAttribute()
+    {
+        $rated = 'no';
+        if(!Auth::guest()){
+            foreach($this->rates as $rate){
+                if($rate->user_id === auth()->user()->id){
+                    $rated = 'yes';
+                }
+            }
+        }
+        return $rated;
     }
 }

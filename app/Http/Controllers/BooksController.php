@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Models\Rate;
+use App\Models\Genre;
+use App\Models\Author;
 use Auth;
 
 class BooksController extends Controller
@@ -28,7 +30,8 @@ class BooksController extends Controller
      */
     public function create()
     {
-        return view('book.create');
+        $genres = Genre::all();
+        return view('book.create')->with('genres', $genres);
     }
 
     /**
@@ -42,8 +45,8 @@ class BooksController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'author' => 'required|string|max:255',
-            'genre' => 'required|string|max:255',
+            'authors' => 'required|string|max:255',
+            'genres' => 'required|array',
             'price' => 'required',
         ]);
 
@@ -66,12 +69,17 @@ class BooksController extends Controller
             'user_id' => auth()->user()->id,
             'title' => $request->title,
             'description' => $request->description,
-            'author' => $request->author,
-            'genre' => $request->genre,
             'price' => $request->price,
             'cover' => $fileName,
         ]);
         $book->save();
+
+        $authors = explode(",", $request->authors);
+        foreach($authors as $authorName){
+            $author = Author::updateOrCreate(['author' => $authorName]);
+            $book->authors()->attach($author->id);
+        }
+        $book->genres()->attach($request->genres);
 
         $books = Book::paginate(25);
         return view('home')->with('books', $books)->with('success', 'Book added to listing successfully!');
@@ -86,15 +94,8 @@ class BooksController extends Controller
     public function show(Book $book)
     {
         $rates = Rate::where('book_id', $book->id)->get();
-        $rated = 'no';
-        if(!Auth::guest()){
-            foreach($rates as $rate){
-                if($rate->user_id === auth()->user()->id){
-                    $rated = 'yes';
-                }
-            }
-        }
-        return view('book.show')->with(compact('book', 'rates', 'rated'));
+        
+        return view('book.show')->with(compact('book', 'rates'));
     }
 
     /**
@@ -152,7 +153,6 @@ class BooksController extends Controller
         $book->save();
 
         $rates = Rate::where('book_id', $book->id)->get();
-
         return view('book.show')->with(compact('book', 'rates'))->with('success', 'Updated successfully!');
     }
 

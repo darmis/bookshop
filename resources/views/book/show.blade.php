@@ -10,14 +10,32 @@
                         <div class="p-14">
                             <div class="divide-y">
                                 <p class="text-4xl font-bold text-gray-900 py-4">{{ $book->title }}</p>
-                                <p class="text-2xl font-medium text-gray-400 py2">{{ $book->author }}</p>
+                                <div class="text-2xl font-medium text-gray-400 py2">Author(s):
+                                    @foreach($book->authors as $author)
+                                        <span>
+                                            {{ $author->author }}
+                                            @if(!$loop->last)
+                                                <span>, </span>
+                                            @endif
+                                        </span>
+                                    @endforeach
+                                </div>
                             </div>
-                            <p class="text-md font-light text-gray-600">{{ $book->genre }}</p>
+                            <div class="text-md font-light text-gray-600">Genre(s):
+                                    @foreach($book->genres as $genre)
+                                        <span>
+                                            {{ $genre->genre}}
+                                            @if(!$loop->last)
+                                                <span>, </span>
+                                            @endif
+                                        </span>
+                                    @endforeach
+                                </div>
                             <p class="py-10">{{ $book->description }}</p>
                         </div>
                     </div>
                     <div class="col-span-3 ...">
-                    @if(!Auth::guest() && $rated === 'no')
+                    @if(!Auth::guest() && $book->isRated === 'no')
                         <div class="text-center">
                             <div class="py-4">
                                 <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
@@ -65,7 +83,7 @@
                             <div class="py-4 bg-gray-50 overflow-hidden shadow-sm sm:rounded-lg flex space-x-4 ...">
                                 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex-1 ...">
                                     <div class="py-2 px-10">{{ $rate->user->name }}</div>
-                                    <div class="py-2 px-10">{{ $rate->rate }}</div>
+                                    <div class="py-2 px-10">{{ $rate->rateInfo }}</div>
                                     <div class="py-2 px-10">2021-02-11</div>
                                 </div>
                                 <div class="p-4 m-4 bg-white w-full flex-2 ...">{{ $rate->review }}</div>
