@@ -23,7 +23,11 @@ Route::get('/home', [BooksController::class, 'index'])->name('home');
 Route::resource('user', UsersController::class)->middleware(['auth', 'admin']);
 
 Route::resource('book', BooksController::class)->middleware(['auth']);
+Route::get('/books/toapprove', [BooksController::class, 'toapprove'])->middleware(['auth', 'admin'])->name('toapprove');
+Route::post('/book/{book}/approve', [BooksController::class, 'approve'])->middleware(['auth','admin'])->name('approve');
 
 Route::post('/rate', [RatesController::class, 'store'])->middleware(['auth'])->name('rate.store');
+
+Route::get('/search', [BooksController::class, 'search'])->name('search');
 
 require __DIR__.'/auth.php';

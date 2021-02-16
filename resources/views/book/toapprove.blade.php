@@ -4,7 +4,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 @if(count($books))
                 <div class="grid grid-cols-5 gap-4">
-                    @forelse($books as $book)
+                    @foreach($books as $book)
                     <div class="">
                             <div class="p-5 mx-auto shadow-sm bg-white rounded-lg block  flex flex-wrap content-center w-full h-4/6 relative">
                                 <a href="{{ route('book.show', $book->id) }}">
@@ -25,11 +25,11 @@
                                 {{ $book->title }}
                             </div>
                             <div class="px-4 uppercase text-sm text-gray-400 font-bold">
-                            @foreach($book->authors as $author)
-                                @if($loop->first)
-                                    {{ $author->author }} ...
-                                @endif
-                            @endforeach
+                                @foreach($book->authors as $author)
+                                    @if($loop->first)
+                                        {{ $author->author }} ...
+                                    @endif
+                                @endforeach
                             </div>
                             @if($book->discount > 0)
                                 <div class="text-center">
@@ -42,7 +42,10 @@
                             @endif
                             @if($book->canEdit)
                             <div class="text-center text-yellow-400">
-                                <a href="{{ url('/book') }}/{{ $book->id }}/edit">Edit</a>
+                                <form method="POST" action="{{ route('approve', $book->id) }}">
+                                    @csrf
+                                    <button type="submit">Approve</button>
+                                </form>
                             </div>
                             <div class="text-center text-red-400">
                                 <form method="POST" action="{{ route('book.destroy', $book->id) }}">

@@ -18,7 +18,7 @@ class BooksController extends Controller
      */
     public function index()
     {
-        $books = Book::paginate(25);
+        $books = Book::with('authors')->where('isApproved', true)->paginate();
 
         return view('home')->with('books', $books);
     }
@@ -81,7 +81,7 @@ class BooksController extends Controller
         }
         $book->genres()->attach($request->genres);
 
-        $books = Book::paginate(25);
+        $books = Book::where('isApproved', true)->paginate();
         return view('home')->with('books', $books)->with('success', 'Book added to listing successfully!');
     }
 
@@ -166,5 +166,55 @@ class BooksController extends Controller
     {
         $book->delete();
         return back()->with('success', 'Book listing deleted successfully!');
+    }
+
+    /**
+     * Display a listing of not approved books.
+     *
+     */
+    public function toapprove()
+    {
+        $books = Book::with('authors')->where('isApproved', false)->paginate();
+
+        return view('book.toapprove')->with('books', $books);
+    }
+
+    /**
+     * Edit book to "approved" condition.
+     *
+     */
+    public function approve(Book $book)
+    {
+        $book->isApproved = 1;
+        $book->save();
+
+        return redirect()->back()->with('success', 'Book was approved successfully!');
+    }
+
+    /**
+     * Display search result.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $request->validate([
+            'search' => 'required|string',
+        ]);
+
+        $keyword = $request->search;
+
+        $books = Book::where('isApproved', true)
+            ->where( function($query) use ($keyword) {
+
+                $query->where('title','LIKE','%'.$keyword.'%');
+
+                $query->orWhereHas('authors' ,function($query) use ($keyword) {
+                    $query->where('author', 'LIKE','%'.$keyword.'%');
+                });
+
+                })->paginate(25);
+
+        return view('home')->with('books', $books);
     }
 }

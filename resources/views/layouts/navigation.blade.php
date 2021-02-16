@@ -8,6 +8,15 @@
                     <a href="{{ route('home') }}">
                         <x-application-logo class="block h-10 w-auto fill-current text-gray-600" />
                     </a>
+                    <div class="mx-10">
+                        <form method="GET" action="{{ route('search') }}">
+                            @csrf
+                            <input name="search" type="text" class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Search..." required>
+                            <button class="flex items-center justify-center px-4 border-l" type="submit">
+                                
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <!-- Navigation Links -->
@@ -22,6 +31,9 @@
                         </div>
                     @else
                         @if(Auth::user()->role === "admin")
+                            <x-nav-link :href="route('toapprove')" :active="request()->routeIs('toapprove')">
+                                {{ __('Not approved books') }}
+                            </x-nav-link>
                             <x-nav-link :href="route('user.index')" :active="request()->routeIs('user.index')">
                                 {{ __('Users') }}
                             </x-nav-link>
@@ -95,6 +107,9 @@
                     {{ __('Register') }}
                 </x-responsive-nav-link>
             @else
+                <x-responsive-nav-link :href="route('toapprove')" :active="request()->routeIs('toapprove')">
+                    {{ __('Not approved books') }}
+                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('user.index')" :active="request()->routeIs('user.index')">
                     {{ __('Users') }}
                 </x-responsive-nav-link>

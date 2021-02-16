@@ -19,12 +19,10 @@ class CreateBooksTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('title')->default('No title yet.');
             $table->longText('description')->default('No description yet.');
-            $table->string('genre')->default('Unknown');
-            $table->string('author')->default('Unknown');
             $table->string('cover')->default('images/covers/default_cover.png');
             $table->decimal('price', 10, 2)->default(0);
             $table->integer('discount')->default(0);
-            $table->boolean('isAproved')->default(0);
+            $table->boolean('isApproved')->default(0);
             $table->timestamps();
         });
     }

@@ -27,6 +27,8 @@ class Book extends Model
         'isAproved'
     ];
 
+    protected $perPage = 25;
+
     public function user(){
         return $this->belongsTo(User::class);
     }
