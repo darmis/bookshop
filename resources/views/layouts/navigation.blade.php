@@ -38,6 +38,9 @@
                                 {{ __('Users') }}
                             </x-nav-link>
                         @endif
+                        <x-nav-link :href="route('mybooks')" :active="request()->routeIs('mybooks')">
+                            {{ __('My books') }}
+                        </x-nav-link>
                     @endguest
                 </div>
             </div>
@@ -107,11 +110,16 @@
                     {{ __('Register') }}
                 </x-responsive-nav-link>
             @else
-                <x-responsive-nav-link :href="route('toapprove')" :active="request()->routeIs('toapprove')">
-                    {{ __('Not approved books') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('user.index')" :active="request()->routeIs('user.index')">
-                    {{ __('Users') }}
+                @if(Auth::user()->role === "admin")
+                    <x-responsive-nav-link :href="route('toapprove')" :active="request()->routeIs('toapprove')">
+                        {{ __('Not approved books') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('user.index')" :active="request()->routeIs('user.index')">
+                        {{ __('Users') }}
+                    </x-responsive-nav-link>
+                @endif
+                <x-responsive-nav-link :href="route('mybooks')" :active="request()->routeIs('mybooks')">
+                    {{ __('My books') }}
                 </x-responsive-nav-link>
                 <button class="p-2 m-2 bg-gray-500 text-white rounded-md focus:outline-none focus:ring-2 ring-gray-300 ring-offset-2">
                     <a href="{{ route('book.create') }}">Add book to listing</a>

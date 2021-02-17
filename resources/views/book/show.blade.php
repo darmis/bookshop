@@ -22,16 +22,19 @@
                                 </div>
                             </div>
                             <div class="text-md font-light text-gray-600">Genre(s):
-                                    @foreach($book->genres as $genre)
-                                        <span>
-                                            {{ $genre->genre}}
-                                            @if(!$loop->last)
-                                                <span>, </span>
-                                            @endif
-                                        </span>
-                                    @endforeach
-                                </div>
+                                @foreach($book->genres as $genre)
+                                    <span>
+                                        {{ $genre->genre}}
+                                        @if(!$loop->last)
+                                            <span>, </span>
+                                        @endif
+                                    </span>
+                                @endforeach
+                            </div>
                             <p class="py-10">{{ $book->description }}</p>
+                            <div class="text-center">
+                                <a class="text-red-500" href="mailto:{{$admin_email->email}}?subject=Report of a book id - {{ $book->id }}, title - {{ $book->title }}">Report this book to administrator</a>
+                            </div>
                         </div>
                     </div>
                     <div class="col-span-3 ...">

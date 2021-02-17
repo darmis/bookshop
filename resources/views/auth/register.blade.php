@@ -41,6 +41,16 @@
                                 type="password"
                                 name="password"
                                 required autocomplete="new-password" />
+                <!-- Show password -->
+                <div class="block mt-4 text-right">
+                    <label for="show_password" class="inline-flex items-center">
+                        <input id="show_password"
+                            onclick="var element = document.getElementById('password'); element.type == 'password' ? element.type='text' : element.type='password';"
+                            type="button" 
+                            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" name="remember">
+                        <span class="ml-2 text-sm text-gray-600">{{ __('Show password') }}</span>
+                    </label>
+                </div>
             </div>
 
             <!-- Confirm Password -->

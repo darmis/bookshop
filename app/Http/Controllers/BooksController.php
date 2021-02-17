@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Book;
 use App\Models\Rate;
 use App\Models\Genre;
@@ -94,8 +95,9 @@ class BooksController extends Controller
     public function show(Book $book)
     {
         $rates = Rate::where('book_id', $book->id)->get();
+        $admin_email = User::where('role', 'admin')->first('email');
         
-        return view('book.show')->with(compact('book', 'rates'));
+        return view('book.show')->with(compact('book', 'rates', 'admin_email'));
     }
 
     /**
@@ -109,7 +111,15 @@ class BooksController extends Controller
         if(auth()->user()->id !== $book->user_id){
             return back()->with('error', 'You cant edit this listing!');
         }
-        return view('book.edit')->with('book', $book);
+        $genres = Genre::all();
+        $book_genres = $book->genres->pluck('id')->toArray('id');
+        $authors = '';
+        foreach($book->authors as $book_author){
+            $authors .= $book_author->author;
+            $authors .= ', ';
+        }
+
+        return view('book.edit')->with(compact('book', 'genres', 'book_genres', 'authors'));
     }
 
     /**
@@ -124,8 +134,8 @@ class BooksController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'author' => 'required|string|max:255',
-            'genre' => 'required|string|max:255',
+            'authors' => 'required|string|max:255',
+            'genres' => 'required|array',
             'price' => 'required',
             'discount' => 'required|max:99'
         ]);
@@ -145,15 +155,24 @@ class BooksController extends Controller
 
         $book->title = $request->title;
         $book->description = $request->description;
-        $book->author = $request->author;
-        $book->genre = $request->genre;
         $book->price = $request->price;
         $book->discount = $request->discount;
         $book->cover = $fileName;
         $book->save();
 
+        $book->genres()->sync($request->genres);
+        $authors_array = explode(",", $request->authors);
+        $book->authors()->detach();
+        foreach ($authors_array as $author) {
+            if (!is_null($author)) {
+                $authors = Author::updateOrCreate(['author' => $author]);
+                $book->authors()->attach($authors->id);
+            }
+        }
+
         $rates = Rate::where('book_id', $book->id)->get();
-        return view('book.show')->with(compact('book', 'rates'))->with('success', 'Updated successfully!');
+        $admin_email = User::where('role', 'admin')->first('email');
+        return view('book.show')->with(compact('book', 'rates', 'admin_email'))->with('success', 'Updated successfully!');
     }
 
     /**
@@ -164,6 +183,9 @@ class BooksController extends Controller
      */
     public function destroy(Book $book)
     {
+        if(auth()->user()->id !== $book->user_id){
+            return back()->with('error', 'You cant delete this listing!');
+        }
         $book->delete();
         return back()->with('success', 'Book listing deleted successfully!');
     }
@@ -216,5 +238,16 @@ class BooksController extends Controller
                 })->paginate(25);
 
         return view('home')->with('books', $books);
+    }
+
+    /**
+     * Display a listing my books.
+     *
+     */
+    public function mybooks()
+    {
+        $books = Book::with('authors')->where('user_id', auth()->user()->id)->paginate();
+
+        return view('book.my')->with('books', $books);
     }
 }

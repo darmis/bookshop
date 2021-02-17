@@ -40,12 +40,9 @@
                                     € {{ $book->price }}
                                 </div>
                             @endif
-                            @if($book->canEdit)
+                            @if($book->user_id === auth()->user()->id)
                             <div class="text-center text-yellow-400">
-                                <form method="POST" action="{{ route('approve', $book->id) }}">
-                                    @csrf
-                                    <button type="submit">Approve</button>
-                                </form>
+                                <a href="{{ url('/book') }}/{{ $book->id }}/edit">Edit</a>
                             </div>
                             <div class="text-center text-red-400">
                                 <form method="POST" action="{{ route('book.destroy', $book->id) }}">
@@ -58,6 +55,8 @@
                     </div>
                     @endforeach
                 </div>
+                @else
+                    You have no books added!
                 @endif
                 {!! $books->links() !!}
             </div>
