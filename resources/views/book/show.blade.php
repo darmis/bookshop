@@ -33,7 +33,7 @@
                             </div>
                             <p class="py-10">{{ $book->description }}</p>
                             <div class="text-center">
-                                <a class="text-red-500" href="mailto:{{$admin_email->email}}?subject=Report of a book id - {{ $book->id }}, title - {{ $book->title }}">Report this book to administrator</a>
+                                <a class="text-red-500" href="{{ route('report', $book->id) }}">Report this book to administrator</a>
                             </div>
                         </div>
                     </div>

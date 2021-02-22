@@ -26,6 +26,7 @@ Route::resource('book', BooksController::class)->middleware(['auth']);
 Route::get('/books/toapprove', [BooksController::class, 'toapprove'])->middleware(['auth', 'admin'])->name('toapprove');
 Route::post('/book/{book}/approve', [BooksController::class, 'approve'])->middleware(['auth','admin'])->name('approve');
 Route::get('/books/mybooks', [BooksController::class, 'mybooks'])->middleware(['auth'])->name('mybooks');
+Route::get('/book/{book}/report', [BooksController::class, 'report'])->middleware(['auth'])->name('report');
 
 Route::post('/rate', [RatesController::class, 'store'])->middleware(['auth'])->name('rate.store');
 
