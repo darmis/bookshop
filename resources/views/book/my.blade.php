@@ -40,9 +40,9 @@
                                     € {{ $book->price }}
                                 </div>
                             @endif
-                            @if($book->user_id === auth()->user()->id)
+                            @if($book->canEdit)
                             <div class="text-center text-yellow-400">
-                                <a href="{{ url('/book') }}/{{ $book->id }}/edit">Edit</a>
+                                <a href="{{ route('book.edit', $book->id) }}">Edit</a>
                             </div>
                             <div class="text-center text-red-400">
                                 <form method="POST" action="{{ route('book.destroy', $book->id) }}">

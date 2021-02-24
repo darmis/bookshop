@@ -52,7 +52,7 @@ class Book extends Model
 
     public function getIsNewAttribute()
     {
-        return $this->created_at >= \Carbon\Carbon::today()->subDays(7);
+        return $this->created_at >= today()->subDays(7);
     }
 
     public function getCanEditAttribute()

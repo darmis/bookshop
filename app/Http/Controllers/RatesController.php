@@ -27,19 +27,19 @@ class RatesController extends Controller
 
         $rate = new Rate([
             'rate' => (int)$request->rate,
-            'user_id' => auth()->user()->id,
+            'user_id' => auth()->id(),
             'book_id' => $request->book_id,
             'review' => $request->review,
         ]);
         $rate->save();
 
-        $book = Book::where('id', $request->book_id)->first();
+        $book = Book::find($request->book_id);
         $rates = Rate::where('book_id', $request->book_id)->get();
 
         $rated = 'no';
         if(!Auth::guest()){
             foreach($rates as $rate){
-                if($rate->user_id === auth()->user()->id){
+                if($rate->user_id === auth()->id()){
                     $rated = 'yes';
                 }
             }

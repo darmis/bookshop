@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Book;
 use App\Models\Rate;
@@ -68,14 +69,13 @@ class BooksController extends Controller
 
         }
 
-        $book = new Book([
-            'user_id' => auth()->user()->id,
+        $book = Book::create([
+            'user_id' => auth()->id(),
             'title' => $request->title,
             'description' => $request->description,
             'price' => $request->price,
             'cover' => $fileName,
         ]);
-        $book->save();
 
         $authors = explode(",", $request->authors);
         foreach($authors as $authorName){
@@ -84,8 +84,7 @@ class BooksController extends Controller
         }
         $book->genres()->attach($request->genres);
 
-        $books = Book::where('isApproved', true)->paginate();
-        return view('home')->with('books', $books)->with('success', 'Book added to listing successfully!');
+        return redirect()->route('home')->with('success', 'Book added to listing successfully!');
     }
 
     /**
@@ -109,18 +108,15 @@ class BooksController extends Controller
      */
     public function edit(Book $book)
     {
-        if(auth()->user()->id == $book->user_id || auth()->user()->role == 'admin'){
-            $genres = Genre::all();
-            $book_genres = $book->genres->pluck('id')->toArray('id');
-            $authors = '';
-            foreach($book->authors as $book_author){
-                $authors .= $book_author->author;
+        $genres = Genre::all();
+        $book_genres = $book->genres->pluck('id')->toArray('id');
+        $authors = '';
+        foreach($book->authors as $book_author){
+            $authors .= $book_author->author;
+            if($book->authors->last() != $book_author){
                 $authors .= ', ';
             }
-        } else {
-            return back()->with('error', 'You cant edit this listing!');
-        }
-        
+        }        
 
         return view('book.edit')->with(compact('book', 'genres', 'book_genres', 'authors'));
     }
@@ -187,9 +183,7 @@ class BooksController extends Controller
      */
     public function destroy(Book $book)
     {
-        if(auth()->user()->id !== $book->user_id || auth()->user()->role !== 'admin'){
-            return back()->with('error', 'You cant delete this listing!');
-        }
+        Storage::delete("public/covers/".$book->cover);
         $book->delete();
         return back()->with('success', 'Book listing deleted successfully!');
     }
