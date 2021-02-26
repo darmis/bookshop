@@ -65,11 +65,11 @@ class Book extends Model
 
     public function getIsRatedAttribute()
     {
-        $rated = 'no';
+        $rated = false;
         if(!Auth::guest()){
             foreach($this->rates as $rate){
                 if($rate->user_id === auth()->user()->id){
-                    $rated = 'yes';
+                    $rated = true;
                 }
             }
         }
